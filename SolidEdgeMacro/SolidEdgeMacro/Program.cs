@@ -15,8 +15,7 @@ namespace SolidEdgeMacro
             {
                 OleMessageFilter.Register();
                 Application application = SolidEdgeUtils.Connect(true);
-                var document = application.Documents;
-                if (application.ActiveDocumentType != DocumentTypeConstants.igPartDocument) throw new Exception("App inactive!!!");
+                if (application.ActiveDocumentType != DocumentTypeConstants.igPartDocument) throw new Exception("Current file is not .par!!!");
 
                 var activeDocument = (PartDocument)application.ActiveDocument;
                 var dimensions = (Dimensions)activeDocument.ProfileSets.Item(2).Profiles.Item(1).Dimensions;
