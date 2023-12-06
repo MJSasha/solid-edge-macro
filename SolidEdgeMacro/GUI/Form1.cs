@@ -30,21 +30,14 @@ namespace GUI
             if (application.ActiveDocumentType != DocumentTypeConstants.igPartDocument) throw new Exception("Current file is not .par!!!");
 
             var activeDocument = (PartDocument)application.ActiveDocument;
-            var dimensions = (Dimensions)activeDocument.ProfileSets.Item(2).Profiles.Item(1).Dimensions;
 
-            foreach (var item in dimensions)
+            foreach (ProfileSet profile in activeDocument.ProfileSets)
             {
-                var dim = (Dimension)item;
-                if (dim.IsReadOnly) continue;
-                myObjects.Add(new Dim { Name = dim.VariableTableName, Value = dim.Value, Dimension = dim });
-            } 
-            dimensions = (Dimensions)activeDocument.ProfileSets.Item(1).Profiles.Item(1).Dimensions;
-
-            foreach (var item in dimensions)
-            {
-                var dim = (Dimension)item;
-                if (dim.IsReadOnly) continue;
-                myObjects.Add(new Dim { Name = dim.VariableTableName, Value = dim.Value, Dimension = dim });
+                foreach (Dimension dim in (Dimensions)profile.Profiles.Item(1).Dimensions)
+                {
+                    if (dim.IsReadOnly) continue;
+                    myObjects.Add(new Dim { Name = dim.VariableTableName, Value = dim.Value, Dimension = dim });
+                } 
             }
             OleMessageFilter.Unregister();
         }
@@ -79,15 +72,15 @@ namespace GUI
 
         private void button2_Click(object sender, EventArgs e)
         {
-            if (button2.Text == "Select")
+            if (button2.Text == ButtonState.Select.ToString())
             {
                 selectedObjects = myObjects.Where(obj => obj.IsSelected).ToList();
                 dataGridView1.DataSource = selectedObjects;
                 myObjects.ForEach(o => o.IsSelected = false);
                 dataGridView1.Columns.RemoveAt(0);
-                button2.Text = "Save";
+                button2.Text = ButtonState.Save.ToString();
             }
-            else if (button2.Text == "Save")
+            else if (button2.Text == ButtonState.Save.ToString())
             {
                 var isSelectedColumn = new DataGridViewCheckBoxColumn
                 {
@@ -103,20 +96,22 @@ namespace GUI
                     {
                         item.Dimension.VariableTableName = item.Name;
                     }
-                    catch                     
-                    {
-                    }
+                    catch { }
                     try
                     {
                         item.Dimension.Value = item.Value;
                     }
-                    catch 
-                    {
-                    }
+                    catch { }
                 }
 
-                button2.Name = "Select";
+                button2.Name = ButtonState.Select.ToString();
             }
+        }
+
+        private enum ButtonState
+        {
+            Select,
+            Save
         }
     }
 } 
